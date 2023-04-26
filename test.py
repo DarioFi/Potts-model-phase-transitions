@@ -1,14 +1,16 @@
+import time
+from collections import defaultdict
+
 import numpy as np
 
-# parameters
-N = 20 ** 2
+# size of the lattice
+side = 10
+N = side ** 2
 q = 2
 
 
-# J = np.ones((N,N))
-# sigma = np.ones(N)
-# print(sigma)
 def _u_slow_test(J, sigma):
+    """function used to test the faster one"""
     en = 0
     for i in range(N):
         for j in range(i + 1, N):
@@ -18,6 +20,7 @@ def _u_slow_test(J, sigma):
 
 
 def U(J, sigma):
+    """internal energy, only ran once at the beginning"""
     en = 0
     for i in range(N):
         delta = sigma[i] == sigma
@@ -25,29 +28,27 @@ def U(J, sigma):
     return en / 2 - J.trace()
 
 
-# U = _u_slow_test
-
+# temperature
 T = 3.
-n_steps = 15000
-stride = 1e3
+n_steps = 100000000
+stride = 100000
 
-bins = 500000
+bins = 300
 min_en = -N * N - 1
 max_en = N * N + 1
 
 
 def propose_flip(sigma, J):
+    """propose random flip uniformly and checks that it is actually a flip"""
     index = np.random.randint(0, N)
     x = np.random.randint(0, q)
     while x == sigma[index]:
         x = np.random.randint(0, q)
     return index, x
-    # while (x := np.random.randint(0, N), np.random.randint(0, q)) == (x[0], sigma[x[0]]):
-    #     pass
-    # return x
 
 
 def energy_flip(sigma, J, i, new_q):
+    """compute what the internal energy would be after flipping one spin without modifying the state"""
     # new energy - old energy
     delta_old = sigma == sigma[i]
     delta_new = sigma == new_q
@@ -58,6 +59,7 @@ def energy_flip(sigma, J, i, new_q):
     return + en_new - en_old
 
 
+# initialize J to be a random symmetric matrix with weights in [-1, +1]
 # J = np.random.uniform(-1, 1, (N, N))
 # for i in range(N):
 #     for j in range(i, N):
@@ -65,48 +67,103 @@ def energy_flip(sigma, J, i, new_q):
 #
 J = -np.ones((N, N))
 
-sigma = 2 * np.random.randint(0, q, N) - 1
+# for i in range(N):
+#     for j in range(N):
+#         if abs(i % side - j % side) < 2:
+#             J[i, j] = 0
+#         if abs(i // side - j // side) < 2:
+#             J[i, j] = 0
+
+# initialize the state at a uniform random
+sigma = np.random.randint(0, q, N)
 energy = U(J, sigma)
 
-g = np.ones(bins + 1)
-f = 1.1
+g: defaultdict[int] = defaultdict(lambda: 1)
+# f = 2
+f = 1.0000001
 M = 1000
 
 energies = []
 magnetization = []
 
-en_to_bin = lambda x: int((x - min_en) / (max_en - min_en) * bins)
 
+# region attempt to do non-uniform bins
+# def binner(x):
+# global memo
+# if int(x) in memo:
+#     return memo[int(x)]
+# res = floor(nbin * tanh(alfabin * x))
+# memo[int(x)] = res
+# return res
+
+
+# def debinner(k):
+#     return atanh(k / nbin) / alfabin
+
+def binner(x) -> int:
+    return int(x / 100)
+
+
+def debinner(x):
+    return x * 100
+
+
+ps = []
 for step in range(n_steps):
     ind, new_q = propose_flip(sigma, J)
-
     diff = energy_flip(sigma, J, ind, new_q)
+
+    # if energy != U(J, sigma):
+    #     print("orrore")
     energy_new = energy + diff
 
-    p = min(1, g[en_to_bin(energy)] / g[en_to_bin(energy_new)])
+    p = min(1, g[binner(energy)] / g[binner(energy_new)])
+
+    if energy == -39600 and step > 100:
+        debug = 0
+        # if energy != energy_new:
+        #     print(energy, energy_new)
+        #     print(g[binner(energy)], g[binner(energy_new)])
+
+    ps.append(p)
     if np.random.uniform(0, 1) < p:
-        # print(f"accepted {energy}")
         # here it is possible to add more histogram for other state functions y
         sigma[ind] = new_q
         energy = energy_new
-        g[en_to_bin(energy)] *= f
+        g[binner(energy)] *= f
     if step % M == 0:
-        print(f"Step {step}/{n_steps}")
         f **= .5
 
-    if energy != U(J, sigma):
-        x = 0
+    if step % stride == 0:
+        print(f"Step {step}/{n_steps} - {round(time.process_time(), 2)}")
+        if time.process_time() > 3:
+            break
+
 
     energies.append(energy)
     magnetization.append(sigma.mean())
 
 import matplotlib.pyplot as plt
 
-# plt.hist(g, bins=100)
-# plt.show()
+x, y = [], []
+for i, v in g.items():
+    print(i)
+    x.append((debinner(i), v))
+    y.append(v)
+
+x.sort(key=lambda x: x[0])
+plt.plot([z[0] for z in x], [z[1] for z in x])
+plt.title("Entropy / Energy")
+plt.show()
+
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 
-ax1.plot(energies, color="blue")
-ax2.plot(magnetization, color="red")
+ax1.plot(energies, color="blue", label="energy")
+# ax2.plot(magnetization, color="red", label="magnetization")
+ax1.legend()
+ax2.legend()
 plt.show()
+
+# plt.hist(ps)
+# plt.show()
