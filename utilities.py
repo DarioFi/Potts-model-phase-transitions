@@ -59,6 +59,8 @@ class Flipper:
         self.rnindex = np.random.randint(0, N, n_iters + 1)
         self.qs = np.random.randint(0, q, int((q + 3) / q * n_iters) * (multiple * 2 + 1) ** 2)
         self.cq = 0
+        self.multiple = multiple
+        self.nn = [(x + L * y) for x in range(-multiple, multiple + 1) for y in range(-multiple, multiple + 1)]
 
     def reset(self):
         self.ci = 0
@@ -82,15 +84,12 @@ class Flipper:
         self.cq += 1
         return self.qs[self.cq - 1]
 
-    def propose_multiple(self, J, sigma, n):
-        L = int(len(sigma) ** 0.5)
+    def propose_multiple(self, J, sigma):
         N = len(sigma)
-
-        nn = [(x + L * y) for x in range(-n, n + 1) for y in range(-n, n + 1)]
 
         i = self.pick_ind()
 
-        inds = [(x + i) % N for x in nn]
+        inds = [(x + i) % N for x in self.nn]
 
         qs = []
         for w in inds:
@@ -150,7 +149,6 @@ if __name__ == '__main__':
         for _ in range(10):
             x = f.propose_multiple(J, sigma, 1)
             print(x)
-
 
         ue = update_energy_multiple(J, sigma, il, iv)
 
