@@ -4,9 +4,9 @@ from collections import defaultdict
 import numpy as np
 
 # size of the lattice
-side = 10
+side = 50
 N = side ** 2
-q = 2
+q = 4
 
 
 def _u_slow_test(J, sigma):
@@ -67,25 +67,25 @@ def energy_flip(sigma, J, i, new_q):
 #
 J = -np.ones((N, N))
 
-# for i in range(N):
-#     for j in range(N):
-#         if abs(i % side - j % side) < 2:
-#             J[i, j] = 0
-#         if abs(i // side - j // side) < 2:
-#             J[i, j] = 0
+for i in range(N):
+    for j in range(N):
+        if abs(i % side - j % side) < 2:
+            J[i, j] = 0
+        if abs(i // side - j // side) < 2:
+            J[i, j] = 0
 
 # initialize the state at a uniform random
 sigma = np.random.randint(0, q, N)
 energy = U(J, sigma)
 
 g: defaultdict[int] = defaultdict(lambda: 1)
-# f = 2
-f = 1.0000001
+# sf = 2
+sf = 1.00001
 M = 1000
 
+f = sf
 energies = []
 magnetization = []
-
 
 # region attempt to do non-uniform bins
 # def binner(x):
@@ -100,12 +100,15 @@ magnetization = []
 # def debinner(k):
 #     return atanh(k / nbin) / alfabin
 
+precision_bins = side
+
+
 def binner(x) -> int:
-    return int(x / 100)
+    return int(x / precision_bins)
 
 
 def debinner(x):
-    return x * 100
+    return x * precision_bins
 
 
 ps = []
@@ -119,11 +122,11 @@ for step in range(n_steps):
 
     p = min(1, g[binner(energy)] / g[binner(energy_new)])
 
-    if energy == -39600 and step > 100:
-        debug = 0
-        # if energy != energy_new:
-        #     print(energy, energy_new)
-        #     print(g[binner(energy)], g[binner(energy_new)])
+    # if energy == -39600 and step > 100:
+    #     debug = 0
+    # if energy != energy_new:
+    #     print(energy, energy_new)
+    #     print(g[binner(energy)], g[binner(energy_new)])
 
     ps.append(p)
     if np.random.uniform(0, 1) < p:
@@ -135,10 +138,9 @@ for step in range(n_steps):
         f **= .5
 
     if step % stride == 0:
-        print(f"Step {step}/{n_steps} - {round(time.process_time(), 2)}")
-        if time.process_time() > 3:
+        print(f"Step {step}/{n_steps} - {round(time.process_time(), 2)}s")
+        if time.process_time() > 60:
             break
-
 
     energies.append(energy)
     magnetization.append(sigma.mean())
@@ -147,23 +149,24 @@ import matplotlib.pyplot as plt
 
 x, y = [], []
 for i, v in g.items():
-    print(i)
+    # print(i)
     x.append((debinner(i), v))
     y.append(v)
 
 x.sort(key=lambda x: x[0])
 plt.plot([z[0] for z in x], [z[1] for z in x])
-plt.title("Entropy / Energy")
+plt.title(f"Entropy / Energy {sf=} {step=}")
+plt.grid()
 plt.show()
 
-fig, ax1 = plt.subplots()
-ax2 = ax1.twinx()
+# fig, ax1 = plt.subplots()
+# ax2 = ax1.twinx()
 
-ax1.plot(energies, color="blue", label="energy")
+# ax1.plot(energies, color="blue", label="energy")
 # ax2.plot(magnetization, color="red", label="magnetization")
-ax1.legend()
-ax2.legend()
-plt.show()
+# ax1.legend()
+# ax2.legend()
+# plt.show()
 
 # plt.hist(ps)
 # plt.show()
