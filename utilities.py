@@ -24,6 +24,19 @@ def update_energy(J, sigma, index, value):
     return (en_new - en_old) / len(sigma)
 
 
+def update_energy_multiple(J, sigma, indexes, values):
+    individuals = 0
+    os = [sigma[i] for i in indexes]
+    for ind, val in zip(indexes, values):
+        individuals += update_energy(J, sigma, ind, val)
+        sigma[ind] = val
+
+    for ind, x in zip(indexes, os):
+        sigma[ind] = x
+
+    return individuals
+
+
 def energy_fun(J, sigma):
     # initialize energy to 0
     en = 0
@@ -41,14 +54,15 @@ def energy_fun(J, sigma):
 
 
 class Flipper:
-    def __init__(self, N, q, n_iters):
+    def __init__(self, N, q, n_iters, multiple=0):
         self.ci = 0
         self.rnindex = np.random.randint(0, N, n_iters + 1)
-        self.qs = np.random.randint(0, q, int((q + 3) / q * n_iters))
+        self.qs = np.random.randint(0, q, int((q + 3) / q * n_iters) * (multiple * 2 + 1) ** 2)
         self.cq = 0
 
     def reset(self):
         self.ci = 0
+        self.cq = 0
 
     def propose(self, J, sigma):
         index = self.rnindex[self.ci]
@@ -60,16 +74,37 @@ class Flipper:
             self.cq += 1
         return index, x
 
+    def pick_ind(self):
+        self.ci += 1
+        return self.rnindex[self.ci - 1]
+
+    def pick_q(self):
+        self.cq += 1
+        return self.qs[self.cq - 1]
+
+    def propose_multiple(self, J, sigma, n):
+        L = int(len(sigma) ** 0.5)
+        N = len(sigma)
+
+        nn = [(x + L * y) for x in range(-n, n + 1) for y in range(-n, n + 1)]
+
+        i = self.pick_ind()
+
+        inds = [(x + i) % N for x in nn]
+
+        qs = []
+        for w in inds:
+            q = self.pick_q()
+            while q == sigma[w]:
+                q = self.pick_q()
+            qs.append(q)
+
+        return inds, qs
+
 
 def propose_flip(J, sigma, q_max):
-    global rnindex, cc
-    if rnindex is None:
-        rnindex = np.random.randint(0, len(sigma), 10 ** 8)
-
-    index = rnindex[cc]
-    cc += 1
     # sample a random site and state
-    # index = np.random.randint(0, len(sigma))
+    index = np.random.randint(0, len(sigma))
     x = np.random.randint(0, q_max)
     # ensure new state is different from the old one
     while x == sigma[index]:
@@ -94,3 +129,41 @@ def ising_ferro(N, L):
                   ((i // L - 1) % L) * L + i % L]:
             J[i, j] = -1
     return J
+
+
+if __name__ == '__main__':
+
+    np.random.seed(1234)
+    L = 10
+    q = 5
+    N = L ** 2
+    for test in range(1):
+        J = ising_ferro(N, L)
+        sigma = np.random.randint(0, q, N)
+
+        se = energy_fun(J, sigma)
+        il = []
+        iv = []
+
+        f = Flipper(N, q, n_iters=1000)
+
+        for _ in range(10):
+            x = f.propose_multiple(J, sigma, 1)
+            print(x)
+
+
+        ue = update_energy_multiple(J, sigma, il, iv)
+
+        for i, v in zip(il, iv):
+            sigma[i] = v
+        fe = energy_fun(J, sigma)
+
+        error = fe - se - ue
+        if abs(error) > 1e-3:
+            print(il)
+            print("dramma")
+            print("start:  ", se)
+            print("end:   ", fe)
+            print("update:   ", ue)
+            print(f"actual: {fe - se}")
+            print(f"error: {error}")
