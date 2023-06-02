@@ -21,7 +21,7 @@ def update_energy(J, sigma, index, value):
     en_new = (np.dot(J[index], delta_new))
 
     # return change in energy due to flip
-    return (en_new - en_old) / len(sigma)
+    return (en_new - en_old)
 
 
 def update_energy_multiple(J, sigma, indexes, values):
@@ -50,7 +50,7 @@ def energy_fun(J, sigma):
         en += np.dot(J[i], delta)
 
     # fix double counting before returning
-    return 0.5 * en / N
+    return 0.5 * en
 
 
 class Flipper:
