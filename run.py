@@ -163,15 +163,6 @@ def simulate(L, q):
     return ordered_temps, avg_en, avg_mag
 
 
-<<<<<<< Updated upstream
-qs_Ls = [(2, 10), (2, 20), (2, 30),
-         (4, 20), (5, 20),
-         (8, 10), (8, 20), (8, 30)
-         ]
-=======
-qs_Ls = [(4, 20), (5, 20)]
->>>>>>> Stashed changes
-
 def multiproc(inp):
     q, L = inp
     tempo = time.time()
@@ -236,7 +227,12 @@ def multiproc(inp):
     plt.close(fig)
 
 
-import multiprocessing as mp
+qs_Ls = [(4, 20), (5, 20)]
 
-with mp.Pool(4) as p:
-    print(p.map(multiproc, qs_Ls))
+for inp in qs_Ls:
+    multiproc(inp)
+
+# import multiprocessing as mp
+#
+# with mp.Pool(4) as p:
+#     print(p.map(multiproc, qs_Ls))
