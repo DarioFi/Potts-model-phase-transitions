@@ -53,8 +53,8 @@ def metropolis(delta_en, t):
 def MCMC(L, q, t, nstep, burnin, J=1):
     # random initial configuration
     N = L ** 2
-    sigma = [[random.randint(0, q-1) for _1 in range(L)] for _2 in range(L)]
-    
+    sigma = [[random.randint(0, q - 1) for _1 in range(L)] for _2 in range(L)]
+
     # initial energy
     en = energy_nn(sigma, J, L)
 
@@ -112,6 +112,7 @@ def critical_Temperature(q, J):
 
 n2 = 5
 
+
 def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     crit = critical_Temperature(q, J)
     crit = round(crit, 1)
@@ -142,15 +143,18 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (10 ** 6, 10 ** 7, 10 ** 6)   # bassi!
+    steps = (10 ** 6, 10 ** 7, 10 ** 6)  # bassi!
     burnin = (10 ** 6, 10 ** 7, 10 ** 6)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
+            tempo = time.time()
+            print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
             ordered_temps.append(t)
-            en, mag = MCMC(L, q, t, steps, burnin)
+            en, mag = MCMC(L, q, t, step, burn)
             avg_en.append(en)
             avg_mag.append(mag)
+            print(f"Elapsed time: {time.time() - tempo}")
 
     return ordered_temps, avg_en, avg_mag
 
@@ -158,8 +162,10 @@ def simulate(L, q):
 qs_Ls = [(2, 10), (2, 20), (2, 30), (4, 20), (5, 20), (8, 10), (8, 20), (8, 30)]
 
 for q, L in qs_Ls:
+    tempo = time.time()
+    print(f"Simulating {q=} {L=}")
     temps, avg_en, avg_mag = simulate(L, q)
-
+    print(f"Elapsed hole simulation time: {time.time() - tempo}")
     spec_heat = [(avg_en[i + 1] - avg_en[i]) / (temps[i + 1] - temps[i]) for i in range(0, len(temps) - 1)]
     spec_heat_temps = [(temps[i + 1] + temps[i]) / 2 for i in range(0, len(temps) - 1)]
 
