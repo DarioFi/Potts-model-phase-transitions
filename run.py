@@ -32,7 +32,7 @@ def delta_energy_nn(sigma, J, i, j, new_q, L):
     return delta_en
 
 
-def propose_flip(sigma, J, L, N):
+def propose_flip(sigma, J, L, N, q):
     index = random.randint(0, N - 1)
     index1, index2 = index // L, index % L
 
@@ -61,7 +61,7 @@ def MCMC(L, q, t, nstep, burnin, J=1):
     # run a few steps to reach stationarity
     for istep in range(burnin):
         # propose random flip
-        ind1, ind2, q_new = propose_flip(sigma, J, L, N)
+        ind1, ind2, q_new = propose_flip(sigma, J, L, N, q)
         # compute energy difference
         delta_en = delta_energy_nn(sigma, J, ind1, ind2, q_new, L)
         # metropolis update rule
@@ -79,7 +79,7 @@ def MCMC(L, q, t, nstep, burnin, J=1):
     # main loop
     for istep in range(nstep):
         # propose random flip
-        ind1, ind2, q_new = propose_flip(sigma, J, L, N)
+        ind1, ind2, q_new = propose_flip(sigma, J, L, N, q)
         # compute energy difference
         delta_en = delta_energy_nn(sigma, J, ind1, ind2, q_new, L)
 
@@ -161,9 +161,13 @@ def simulate(L, q):
     return ordered_temps, avg_en, avg_mag
 
 
-qs_Ls = [(2, 10), (2, 20), (2, 30), (4, 20), (5, 20), (8, 10), (8, 20), (8, 30)]
+qs_Ls = [(2, 10), (2, 20), (2, 30),
+         (4, 20), (5, 20),
+         (8, 10), (8, 20), (8, 30)
+         ]
 
-for q, L in qs_Ls:
+def multiproc(inp):
+    q, L = inp
     tempo = time.time()
     print(f"Simulating {q=} {L=}")
     temps, avg_en, avg_mag = simulate(L, q)
@@ -224,3 +228,9 @@ for q, L in qs_Ls:
     plt.title('Specific Heat vs Temperature zoomed in')
     plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
     plt.close(fig)
+
+
+import multiprocessing as mp
+
+with mp.Pool(4) as p:
+    print(p.map(multiproc, qs_Ls))
