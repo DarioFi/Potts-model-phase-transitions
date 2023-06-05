@@ -149,11 +149,13 @@ def simulate(L, q):
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
             tempo = time.time()
-            print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                step = 10 ** 8
-            en, mag = MCMC(L, q, t, step, burn)
+                print(f"Starting simulation for {q=} {L=} {t=} with step={10**8} and burnin={burn}")
+                en, mag = MCMC(L, q, t, 10**8, burn)
+            else:
+                print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
+                en, mag = MCMC(L, q, t, step, burn)
             avg_en.append(en)
             avg_mag.append(mag)
             print(f"Elapsed time: {time.time() - tempo}")
@@ -174,7 +176,7 @@ def multiproc(inp):
     tempo = time.time()
     print(f"Simulating {q=} {L=}")
     temps, avg_en, avg_mag = simulate(L, q)
-    print(f"Elapsed hole simulation time: {time.time() - tempo}")
+    print(f"Elapsed time: {time.time() - tempo}")
     spec_heat = [(avg_en[i + 1] - avg_en[i]) / (temps[i + 1] - temps[i]) for i in range(0, len(temps) - 1)]
     spec_heat_temps = [(temps[i + 1] + temps[i]) / 2 for i in range(0, len(temps) - 1)]
 
