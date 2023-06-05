@@ -149,8 +149,8 @@ def simulate(L, q):
         for t in temps:
             ordered_temps.append(t)
             if math.abs(t - critical_Temperature(q)) < 0.05:
-                steps = 10**8
-            en, mag = MCMC(L, q, t, steps, burnin)
+                step = 10**8
+            en, mag = MCMC(L, q, t, step, burn)
             avg_en.append(en)
             avg_mag.append(mag)
 
