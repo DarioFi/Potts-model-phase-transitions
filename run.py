@@ -106,7 +106,7 @@ def MCMC(L, q, t, nstep, burnin, J=1):
     return avg_t / nstep, mag_avg / nstep / N
 
 
-def critical_Temperature(q, J):
+def critical_Temperature(q, J=1):
     return J / math.log(1 + math.sqrt(q))
 
 
@@ -143,16 +143,16 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (5*10 ** 6, 2*10 ** 7, 5*10 ** 6)
-    burnin = (5*10 ** 6, 2*10 ** 7, 5*10 ** 6)
+    steps = (5 * 10 ** 6, 2 * 10 ** 7, 5 * 10 ** 6)
+    burnin = (5 * 10 ** 6, 2 * 10 ** 7, 5 * 10 ** 6)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
             tempo = time.time()
             print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
             ordered_temps.append(t)
-            if math.abs(t - critical_Temperature(q)) < 0.05:
-                step = 10**8
+            if abs(t - critical_Temperature(q)) < 0.05:
+                step = 10 ** 8
             en, mag = MCMC(L, q, t, step, burn)
             avg_en.append(en)
             avg_mag.append(mag)
