@@ -161,10 +161,13 @@ def simulate(L, q):
     return ordered_temps, avg_en, avg_mag
 
 
-qs_Ls = [(2, 10), (2, 20), (2, 30),
-         (4, 20), (5, 20),
-         (8, 10), (8, 20), (8, 30)
-         ]
+qs_Ls = [
+    # (2, 10), (2, 20), (2, 30),
+    #      (4, 20), (5, 20),
+    #      (8, 10),
+    (8, 20), (8, 30)
+]
+
 
 def multiproc(inp):
     q, L = inp
@@ -231,6 +234,16 @@ def multiproc(inp):
 
 
 import multiprocessing as mp
+
+print(critical_Temperature(8))
+print(get_temps(8))
+
+print("------------------")
+print("------------------")
+print("------------------")
+
+print(critical_Temperature(2))
+print(get_temps(2))
 
 with mp.Pool(4) as p:
     print(p.map(multiproc, qs_Ls))
