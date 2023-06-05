@@ -52,10 +52,10 @@ def metropolis(delta_en, t):
 
 def MCMC(L, q, t, nstep, burnin, J=1):
     # random initial configuration
-    # sigma = np.random.randint(0, q, (L, L))
-
     N = L ** 2
-    sigma = [[random.randint(0, q) for _1 in range(L)] for _2 in range(L)]
+    sigma = [[random.randint(0, q-1) for _1 in range(L)] for _2 in range(L)]
+    
+    # initial energy
     en = energy_nn(sigma, J, L)
 
     # run a few steps to reach stationarity
@@ -73,7 +73,7 @@ def MCMC(L, q, t, nstep, burnin, J=1):
             en += delta_en
 
     mag_state = list(np.bincount(np.array(sigma).reshape(-1), minlength=q))
-    mag_avg = max(mag_state)
+    mag_avg = 0
 
     avg_t = 0
     # main loop
@@ -103,7 +103,7 @@ def MCMC(L, q, t, nstep, burnin, J=1):
 
         avg_t += en
 
-    return avg_t / nstep, mag_avg / nstep / q
+    return avg_t / nstep, mag_avg / nstep / N
 
 
 def critical_Temperature(q, J):
@@ -112,8 +112,7 @@ def critical_Temperature(q, J):
 
 n2 = 5
 
-
-def get_temps(q, J=1, n1=10, n2=n2, dt=0.02, zero=0.2, infinity=5.0):
+def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     crit = critical_Temperature(q, J)
     crit = round(crit, 1)
 
@@ -143,8 +142,8 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (10 ** 6, 10 ** 7, 10 ** 6)
-    burnin = (100 * 6, 10 ** 7, 10 ** 6)
+    steps = (10 ** 6, 10 ** 7, 10 ** 6)   # bassi!
+    burnin = (10 ** 6, 10 ** 7, 10 ** 6)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
