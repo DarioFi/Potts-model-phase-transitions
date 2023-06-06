@@ -1,6 +1,7 @@
 # metropolis simulation. Accept parameters specifying system and simulation config. Store results in global dicts.
 import json
 import math
+import platform
 import random
 import time
 
@@ -134,7 +135,6 @@ def arange(start, stop, step):
     return result
 
 
-
 def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     crit = critical_Temperature(q, J)
     crit = round(crit, 1)
@@ -185,14 +185,6 @@ def simulate(L, q):
     return ordered_temps, avg_en, avg_mag
 
 
-qs_Ls = [
-    (2, 10), (2, 20), (2, 30),
-    # (4, 20), (5, 20),
-    (8, 10),
-    # (8, 20), (8, 30)
-]
-
-
 def multiproc(inp):
     q, L = inp
     tempo = time.time()
@@ -209,55 +201,58 @@ def multiproc(inp):
         json.dump({"temps": temps, "avg_en": avg_en, "avg_mag": avg_mag,
                    "spec_heat": spec_heat, "spec_heat_temps": spec_heat_temps}, file)
 
-    # fig = plt.figure(figsize=(10, 10))
-    #
-    # plt.plot(spec_heat_temps, spec_heat)
-    # plt.xlabel('Temperature')
-    # plt.ylabel('Specific Heat')
-    # plt.title('Specific Heat vs Temperature')
-    # plt.savefig(f"specific_heat_{q=}_{L=}.png")
-    #
-    # plt.close(fig)
-    #
-    # fig = plt.figure(figsize=(10, 10))
-    # plt.plot(temps, avg_en)
-    # plt.xlabel('Temperature')
-    # plt.ylabel('average Energy')
-    # plt.title('Energy vs Temperature')
-    # plt.savefig(f"energy_{q=}_{L=}.png")
-    # plt.close(fig)
-    #
-    # fig = plt.figure(figsize=(10, 10))
-    # plt.plot(temps, avg_mag)
-    # plt.xlabel('Temperature')
-    # plt.ylabel('Max magnetization')
-    # plt.title('Max magnetization vs Temperature')
-    # plt.savefig(f"max_mag_{q=}_{L=}.png")
-    # plt.close(fig)
-    #
-    # fig = plt.figure(figsize=(10, 10))
-    # plt.plot(temps[n2:-n2], avg_en[n2:-n2])
-    # plt.xlabel('Temperature')
-    # plt.ylabel('average Energy')
-    # plt.title('Energy vs Temperature zoomed in')
-    # plt.savefig(f"energy_zoom_{q=}_{L=}.png")
-    # plt.close(fig)
-    #
-    # fig = plt.figure(figsize=(10, 10))
-    # plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
-    # plt.xlabel('Temperature')
-    # plt.ylabel('Max magnetization')
-    # plt.title('Max magnetization vs Temperature zoomed in')
-    # plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
-    # plt.close(fig)
-    #
-    # fig = plt.figure(figsize=(10, 10))
-    # plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
-    # plt.xlabel('Temperature')
-    # plt.ylabel('Specific Heat')
-    # plt.title('Specific Heat vs Temperature zoomed in')
-    # plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
-    # plt.close(fig)
+    if "pypy" in platform.python_implementation().lower():
+        import matplotlib.pyplot as plt
+
+        fig = plt.figure(figsize=(10, 10))
+
+        plt.plot(spec_heat_temps, spec_heat)
+        plt.xlabel('Temperature')
+        plt.ylabel('Specific Heat')
+        plt.title('Specific Heat vs Temperature')
+        plt.savefig(f"specific_heat_{q=}_{L=}.png")
+
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.plot(temps, avg_en)
+        plt.xlabel('Temperature')
+        plt.ylabel('average Energy')
+        plt.title('Energy vs Temperature')
+        plt.savefig(f"energy_{q=}_{L=}.png")
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.plot(temps, avg_mag)
+        plt.xlabel('Temperature')
+        plt.ylabel('Max magnetization')
+        plt.title('Max magnetization vs Temperature')
+        plt.savefig(f"max_mag_{q=}_{L=}.png")
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.plot(temps[n2:-n2], avg_en[n2:-n2])
+        plt.xlabel('Temperature')
+        plt.ylabel('average Energy')
+        plt.title('Energy vs Temperature zoomed in')
+        plt.savefig(f"energy_zoom_{q=}_{L=}.png")
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
+        plt.xlabel('Temperature')
+        plt.ylabel('Max magnetization')
+        plt.title('Max magnetization vs Temperature zoomed in')
+        plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
+        plt.xlabel('Temperature')
+        plt.ylabel('Specific Heat')
+        plt.title('Specific Heat vs Temperature zoomed in')
+        plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
+        plt.close(fig)
 
 
 import multiprocessing as mp
@@ -271,6 +266,13 @@ print("------------------")
 
 print(critical_Temperature(2))
 print(get_temps(2))
+
+qs_Ls = [
+    (2, 10), (2, 20), (2, 30),
+    (4, 20), (5, 20),
+    (8, 10),
+    (8, 20), (8, 30)
+]
 
 with mp.Pool(4) as p:
     print(p.map(multiproc, qs_Ls))
