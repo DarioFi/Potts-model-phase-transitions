@@ -24,7 +24,6 @@ path = "results"
 #         json.dump(d, f)
 
 
-# provvisorio
 for (q, L) in qs_Ls:
 
     with open(os.path.join(path, f"simulation_{q=}_{L=}.json")) as f:
@@ -47,11 +46,7 @@ for (q, L) in qs_Ls:
 
             d['avg_en'][i] = en
             d['avg_mag'][i] = mag
-            d['spec_heat'][i] = d['avg_en'][i + 1] - d['avg_en'][i] / d['temps'][i + 1] - d['temps'][i]
+            d['spec_heat'][i] = (d['avg_en'][i + 1] - d['avg_en'][i]) / (d['temps'][i + 1] - d['temps'][i])
 
-        print(d['temps'])
-        print(d['avg_en'])
-        print(d['avg_mag'])
-        print(d['spec_heat'])
-
-    break
+    with open(os.path.join(path, f"simulation_{q=}_{L=}.json"), 'w') as f:
+        json.dump(d, f)
