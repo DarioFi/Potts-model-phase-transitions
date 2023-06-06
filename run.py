@@ -165,8 +165,8 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (2 * 10 ** 7, 5 * 10 ** 7, 2 * 10 ** 7)
-    burnin = (2 * 10 ** 7, 5 * 10 ** 7, 2 * 10 ** 7)
+    steps = (4 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
+    burnin = (4 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
@@ -174,7 +174,7 @@ def simulate(L, q):
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={3 * 10 ** 8} and burnin={10 ** 8}")
-                en, mag = MCMC(L, q, t, 3 * 10 ** 8, 10 ** 8)
+                en, mag = MCMC(L, q, t, 4 * 10 ** 8, 2 * 10 ** 8)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
                 en, mag = MCMC(L, q, t, step, burn)
