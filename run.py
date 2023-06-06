@@ -151,8 +151,8 @@ def simulate(L, q):
             tempo = time.time()
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                print(f"Starting simulation for {q=} {L=} {t=} with step={10**8} and burnin={burn}")
-                en, mag = MCMC(L, q, t, 10**8, burn)
+                print(f"Starting simulation for {q=} {L=} {t=} with step={10 ** 8} and burnin={burn}")
+                en, mag = MCMC(L, q, t, 10 ** 8, burn)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
                 en, mag = MCMC(L, q, t, step, burn)
@@ -161,6 +161,14 @@ def simulate(L, q):
             print(f"Elapsed time: {time.time() - tempo}")
 
     return ordered_temps, avg_en, avg_mag
+
+
+qs_Ls = [
+    (2, 10), (2, 20), (2, 30),
+    # (4, 20), (5, 20),
+    (8, 10),
+    # (8, 20), (8, 30)
+]
 
 
 def multiproc(inp):
@@ -230,13 +238,17 @@ def multiproc(inp):
     plt.close(fig)
 
 
-if __name__ == '__main__':
-    qs_Ls = [(4, 20), (5, 20)]
+import multiprocessing as mp
 
-    for inp in qs_Ls:
-        multiproc(inp)
+print(critical_Temperature(8))
+print(get_temps(8))
 
-# import multiprocessing as mp
-#
-# with mp.Pool(4) as p:
-#     print(p.map(multiproc, qs_Ls))
+print("------------------")
+print("------------------")
+print("------------------")
+
+print(critical_Temperature(2))
+print(get_temps(2))
+
+with mp.Pool(4) as p:
+    print(p.map(multiproc, qs_Ls))
