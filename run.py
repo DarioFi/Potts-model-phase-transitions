@@ -255,7 +255,7 @@ def multiproc(inp):
         plt.close(fig)
 
 
-import multiprocessing as mp
+# import multiprocessing as mp
 
 
 print(critical_Temperature(2))
