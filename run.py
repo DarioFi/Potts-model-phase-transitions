@@ -147,7 +147,7 @@ def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
     out2 = arange(high, infinity, (infinity - high) / (n2 + 1))
 
     core = list(core)
-    out1 = list(out1)
+    out1 = list(out1)[:-1]
     out2 = list(out2)[1:]
 
     for arr in [core, out1, out2]:
@@ -257,15 +257,15 @@ def multiproc(inp):
 
 import multiprocessing as mp
 
-print(critical_Temperature(5))
-print(get_temps(8))
-
-print("------------------")
-print("------------------")
-print("------------------")
 
 print(critical_Temperature(2))
 print(get_temps(2))
+print(critical_Temperature(4))
+print(get_temps(4))
+print(critical_Temperature(5))
+print(get_temps(5))
+print(critical_Temperature(8))
+print(get_temps(8))
 
 qs_Ls = [
     (2, 50),
