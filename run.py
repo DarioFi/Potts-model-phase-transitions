@@ -135,7 +135,7 @@ def arange(start, stop, step):
     return result
 
 
-def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
+def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
     crit = critical_Temperature(q, J)
     crit = round(crit, 1)
 
@@ -165,16 +165,16 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (5 * 10 ** 6, 2 * 10 ** 7, 5 * 10 ** 6)
-    burnin = (5 * 10 ** 6, 2 * 10 ** 7, 5 * 10 ** 6)
+    steps = (2 * 10 ** 7, 5 * 10 ** 7, 2 * 10 ** 7)
+    burnin = (2 * 10 ** 7, 5 * 10 ** 7, 2 * 10 ** 7)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
             tempo = time.time()
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                print(f"Starting simulation for {q=} {L=} {t=} with step={10 ** 8} and burnin={burn}")
-                en, mag = MCMC(L, q, t, 10 ** 8, burn)
+                print(f"Starting simulation for {q=} {L=} {t=} with step={3 * 10 ** 8} and burnin={10 ** 8}")
+                en, mag = MCMC(L, q, t, 3 * 10 ** 8, 10 ** 8)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
                 en, mag = MCMC(L, q, t, step, burn)
@@ -257,7 +257,7 @@ def multiproc(inp):
 
 import multiprocessing as mp
 
-print(critical_Temperature(8))
+print(critical_Temperature(5))
 print(get_temps(8))
 
 print("------------------")
@@ -268,10 +268,10 @@ print(critical_Temperature(2))
 print(get_temps(2))
 
 qs_Ls = [
-    (2, 10), (2, 20), (2, 30),
-    (4, 20), (5, 20),
-    (8, 10),
-    (8, 20), (8, 30)
+    (2, 50),
+    (4, 50),
+    (5, 50),
+    (8, 50),
 ]
 
 with mp.Pool(4) as p:
