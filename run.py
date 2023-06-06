@@ -4,10 +4,6 @@ import math
 import random
 import time
 
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 random.seed(2212)
 
 
@@ -50,6 +46,21 @@ def metropolis(delta_en, t):
     return False
 
 
+def bincount(x, q, double=True):
+    # flatten double list
+    if double:
+        flattened = []
+        for sublist in x:
+            for item in sublist:
+                flattened.append(item)
+        x = flattened
+    # count appearences of integers between 0 and q-1 (error raised if q is wrong)
+    counts = [0] * q
+    for i in x:
+        counts[i] += 1
+    return counts
+
+
 def MCMC(L, q, t, nstep, burnin, J=1):
     # random initial configuration
     N = L ** 2
@@ -72,7 +83,8 @@ def MCMC(L, q, t, nstep, burnin, J=1):
             # update energy
             en += delta_en
 
-    mag_state = list(np.bincount(np.array(sigma).reshape(-1), minlength=q))
+    # mag_state = list(np.bincount(np.array(sigma).reshape(-1), minlength=q))
+    mag_state = bincount(sigma, q)
     mag_avg = 0
 
     avg_t = 0
@@ -113,6 +125,16 @@ def critical_Temperature(q, J=1):
 n2 = 5
 
 
+def arange(start, stop, step):
+    result = []
+    current = start
+    while current < stop:
+        result.append(current)
+        current += step
+    return result
+
+
+
 def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     crit = critical_Temperature(q, J)
     crit = round(crit, 1)
@@ -120,9 +142,9 @@ def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     low = crit - n1 * dt
     high = crit + n1 * dt
 
-    core = np.arange(low, high, dt)
-    out1 = np.arange(zero, low, (low - zero) / n2)
-    out2 = np.arange(high, infinity, (infinity - high) / (n2 + 1))
+    core = arange(low, high, dt)
+    out1 = arange(zero, low, (low - zero) / n2)
+    out2 = arange(high, infinity, (infinity - high) / (n2 + 1))
 
     core = list(core)
     out1 = list(out1)
@@ -187,55 +209,55 @@ def multiproc(inp):
         json.dump({"temps": temps, "avg_en": avg_en, "avg_mag": avg_mag,
                    "spec_heat": spec_heat, "spec_heat_temps": spec_heat_temps}, file)
 
-    fig = plt.figure(figsize=(10, 10))
-
-    plt.plot(spec_heat_temps, spec_heat)
-    plt.xlabel('Temperature')
-    plt.ylabel('Specific Heat')
-    plt.title('Specific Heat vs Temperature')
-    plt.savefig(f"specific_heat_{q=}_{L=}.png")
-
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.plot(temps, avg_en)
-    plt.xlabel('Temperature')
-    plt.ylabel('average Energy')
-    plt.title('Energy vs Temperature')
-    plt.savefig(f"energy_{q=}_{L=}.png")
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.plot(temps, avg_mag)
-    plt.xlabel('Temperature')
-    plt.ylabel('Max magnetization')
-    plt.title('Max magnetization vs Temperature')
-    plt.savefig(f"max_mag_{q=}_{L=}.png")
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.plot(temps[n2:-n2], avg_en[n2:-n2])
-    plt.xlabel('Temperature')
-    plt.ylabel('average Energy')
-    plt.title('Energy vs Temperature zoomed in')
-    plt.savefig(f"energy_zoom_{q=}_{L=}.png")
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
-    plt.xlabel('Temperature')
-    plt.ylabel('Max magnetization')
-    plt.title('Max magnetization vs Temperature zoomed in')
-    plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
-    plt.xlabel('Temperature')
-    plt.ylabel('Specific Heat')
-    plt.title('Specific Heat vs Temperature zoomed in')
-    plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
-    plt.close(fig)
+    # fig = plt.figure(figsize=(10, 10))
+    #
+    # plt.plot(spec_heat_temps, spec_heat)
+    # plt.xlabel('Temperature')
+    # plt.ylabel('Specific Heat')
+    # plt.title('Specific Heat vs Temperature')
+    # plt.savefig(f"specific_heat_{q=}_{L=}.png")
+    #
+    # plt.close(fig)
+    #
+    # fig = plt.figure(figsize=(10, 10))
+    # plt.plot(temps, avg_en)
+    # plt.xlabel('Temperature')
+    # plt.ylabel('average Energy')
+    # plt.title('Energy vs Temperature')
+    # plt.savefig(f"energy_{q=}_{L=}.png")
+    # plt.close(fig)
+    #
+    # fig = plt.figure(figsize=(10, 10))
+    # plt.plot(temps, avg_mag)
+    # plt.xlabel('Temperature')
+    # plt.ylabel('Max magnetization')
+    # plt.title('Max magnetization vs Temperature')
+    # plt.savefig(f"max_mag_{q=}_{L=}.png")
+    # plt.close(fig)
+    #
+    # fig = plt.figure(figsize=(10, 10))
+    # plt.plot(temps[n2:-n2], avg_en[n2:-n2])
+    # plt.xlabel('Temperature')
+    # plt.ylabel('average Energy')
+    # plt.title('Energy vs Temperature zoomed in')
+    # plt.savefig(f"energy_zoom_{q=}_{L=}.png")
+    # plt.close(fig)
+    #
+    # fig = plt.figure(figsize=(10, 10))
+    # plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
+    # plt.xlabel('Temperature')
+    # plt.ylabel('Max magnetization')
+    # plt.title('Max magnetization vs Temperature zoomed in')
+    # plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
+    # plt.close(fig)
+    #
+    # fig = plt.figure(figsize=(10, 10))
+    # plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
+    # plt.xlabel('Temperature')
+    # plt.ylabel('Specific Heat')
+    # plt.title('Specific Heat vs Temperature zoomed in')
+    # plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
+    # plt.close(fig)
 
 
 import multiprocessing as mp
