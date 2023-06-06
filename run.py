@@ -253,10 +253,10 @@ def multiproc(inp):
 
 
 if __name__ == '__main__':
-    # qs_Ls = [(4, 20), (5, 20)]
-    #
-    # for inp in qs_Ls:
-    #     multiproc(inp)
+    qs_Ls = [(4, 20), (5, 20)]
+
+    for inp in qs_Ls:
+        multiproc(inp)
 
 
 # import multiprocessing as mp
