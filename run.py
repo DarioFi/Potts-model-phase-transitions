@@ -129,8 +129,8 @@ def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.2, infinity=3.0):
     out2 = list(out2)[1:]
 
     for arr in [core, out1, out2]:
-        for i in range(len(arr)):
-            arr[i] = round(arr[i], 2)
+        for i, x in enumerate(arr):
+            arr[i] = round(x, 2)
 
     return out1, core, out2
 
@@ -171,6 +171,9 @@ def multiproc(inp):
     print(f"Elapsed time: {time.time() - tempo}")
     spec_heat = [(avg_en[i + 1] - avg_en[i]) / (temps[i + 1] - temps[i]) for i in range(0, len(temps) - 1)]
     spec_heat_temps = [(temps[i + 1] + temps[i]) / 2 for i in range(0, len(temps) - 1)]
+
+    for i, x in enumerate(spec_heat_temps):
+        spec_heat_temps[i] = round(x, 3)
 
     with open(f"simulation_{q=}_{L=}.json", "w") as file:
         json.dump({"temps": temps, "avg_en": avg_en, "avg_mag": avg_mag,
@@ -227,10 +230,11 @@ def multiproc(inp):
     plt.close(fig)
 
 
-qs_Ls = [(4, 20), (5, 20)]
+if __name__ == '__main__':
+    qs_Ls = [(4, 20), (5, 20)]
 
-for inp in qs_Ls:
-    multiproc(inp)
+    for inp in qs_Ls:
+        multiproc(inp)
 
 # import multiprocessing as mp
 #
