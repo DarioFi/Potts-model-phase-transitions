@@ -274,5 +274,6 @@ qs_Ls = [
     (8, 50),
 ]
 
-with mp.Pool(4) as p:
-    print(p.map(multiproc, qs_Ls))
+if __name__ == '__main__':
+    with mp.Pool(4) as p:
+        print(p.map(multiproc, qs_Ls))
