@@ -123,9 +123,10 @@ def critical_Temperature(q, J=1):
     return J / math.log(1 + math.sqrt(q))
 
 
-n2 = 1
-n1 = 3
-dt = 0.005
+n2 = 5
+n1 = 10
+# dt = 0.005
+dt = 0.02
 
 
 def arange(start, stop, step):
@@ -168,15 +169,15 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (4 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
-    burnin = (4 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
+    steps = (1 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
+    burnin = (1 * 10 ** 7, 10 ** 8, 4 * 10 ** 7)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
             tempo = time.time()
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                print(f"Starting simulation for {q=} {L=} {t=} with step={4 * 10 ** 8} and burnin={2 * 10 ** 8}")
+                print(f"Starting simulation for {q=} {L=} {t=} with step={5 * 10 ** 8} and burnin={2 * 10 ** 8}")
                 en, mag = MCMC(L, q, t, 5 * 10 ** 8, 2 * 10 ** 8)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
@@ -188,7 +189,7 @@ def simulate(L, q):
     return ordered_temps, avg_en, avg_mag
 
 
-def multiproc(inp):
+def simulate_save(inp):
     q, L = inp
     tempo = time.time()
     print(f"Simulating {q=} {L=}")
@@ -278,6 +279,6 @@ qs_Ls = [
 if __name__ == '__main__':
     print(get_temps(4))
     print(get_temps(5))
-    with mp.Pool(2) as p:
-        print(p.map(multiproc, qs_Ls))
+    with mp.Pool(1) as p:
+        print(p.map(simulate_save, qs_Ls))
     # print(get_temps(8))
