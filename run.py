@@ -138,7 +138,7 @@ def arange(start, stop, step):
 
 def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
     crit = critical_Temperature(q, J)
-    crit = round(crit, 1)
+    crit = round(crit, 2)
 
     low = crit - n1 * dt
     high = crit + n1 * dt
@@ -149,7 +149,7 @@ def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
 
     core = list(core)
     out1 = list(out1)[:-1]
-    out2 = list(out2)[1:]
+    out2 = list(out2)
 
     for arr in [core, out1, out2]:
         for i, x in enumerate(arr):
@@ -256,7 +256,7 @@ def multiproc(inp):
         plt.close(fig)
 
 
-# import multiprocessing as mp
+import multiprocessing as mp
 
 
 print(critical_Temperature(2))
