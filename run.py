@@ -123,21 +123,24 @@ def critical_Temperature(q, J=1):
     return J / math.log(1 + math.sqrt(q))
 
 
-n2 = 5
+n2 = 1
+n1 = 3
+dt = 0.005
 
 
 def arange(start, stop, step):
     result = []
+    eps = 0.001
     current = start
-    while current < stop:
+    while current < stop - eps:
         result.append(current)
         current += step
     return result
 
 
-def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
+def get_temps(q, J=1, n1=n1, n2=n2, dt=dt, zero=0.4, infinity=3.0):
     crit = critical_Temperature(q, J)
-    crit = round(crit, 1)
+    crit = round(crit, 4)
 
     low = crit - n1 * dt
     high = crit + n1 * dt
@@ -152,7 +155,7 @@ def get_temps(q, J=1, n1=13, n2=n2, dt=0.02, zero=0.4, infinity=3.0):
 
     for arr in [core, out1, out2]:
         for i, x in enumerate(arr):
-            arr[i] = round(x, 2)
+            arr[i] = round(x, 4)
 
     return out1, core, out2
 
@@ -173,8 +176,8 @@ def simulate(L, q):
             tempo = time.time()
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                print(f"Starting simulation for {q=} {L=} {t=} with step={3 * 10 ** 8} and burnin={10 ** 8}")
-                en, mag = MCMC(L, q, t, 4 * 10 ** 8, 2 * 10 ** 8)
+                print(f"Starting simulation for {q=} {L=} {t=} with step={4 * 10 ** 8} and burnin={2 * 10 ** 8}")
+                en, mag = MCMC(L, q, t, 5 * 10 ** 8, 2 * 10 ** 8)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
                 en, mag = MCMC(L, q, t, step, burn)
@@ -255,25 +258,26 @@ def multiproc(inp):
         plt.close(fig)
 
 
-# import multiprocessing as mp
+import multiprocessing as mp
 
-print(critical_Temperature(5))
-print(get_temps(8))
-
-print("------------------")
-print("------------------")
-print("------------------")
-
-print(critical_Temperature(2))
-print(get_temps(2))
+# print(critical_Temperature(5))
+# print(get_temps(8))
+#
+# print("------------------")
+# print("------------------")
+# print("------------------")
+#
+# print(critical_Temperature(2))
+# print(get_temps(2))
 
 qs_Ls = [
-    (2, 50),
     (4, 50),
     (5, 50),
-    (8, 50),
 ]
 
 if __name__ == '__main__':
-    with mp.Pool(4) as p:
+    print(get_temps(4))
+    print(get_temps(5))
+    with mp.Pool(2) as p:
         print(p.map(multiproc, qs_Ls))
+    # print(get_temps(8))
