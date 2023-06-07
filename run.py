@@ -204,58 +204,58 @@ def multiproc(inp):
         json.dump({"temps": temps, "avg_en": avg_en, "avg_mag": avg_mag,
                    "spec_heat": spec_heat, "spec_heat_temps": spec_heat_temps}, file)
 
-    if "pypy" in platform.python_implementation().lower():
-        import matplotlib.pyplot as plt
-
-        fig = plt.figure(figsize=(10, 10))
-
-        plt.plot(spec_heat_temps, spec_heat)
-        plt.xlabel('Temperature')
-        plt.ylabel('Specific Heat')
-        plt.title('Specific Heat vs Temperature')
-        plt.savefig(f"specific_heat_{q=}_{L=}.png")
-
-        plt.close(fig)
-
-        fig = plt.figure(figsize=(10, 10))
-        plt.plot(temps, avg_en)
-        plt.xlabel('Temperature')
-        plt.ylabel('average Energy')
-        plt.title('Energy vs Temperature')
-        plt.savefig(f"energy_{q=}_{L=}.png")
-        plt.close(fig)
-
-        fig = plt.figure(figsize=(10, 10))
-        plt.plot(temps, avg_mag)
-        plt.xlabel('Temperature')
-        plt.ylabel('Max magnetization')
-        plt.title('Max magnetization vs Temperature')
-        plt.savefig(f"max_mag_{q=}_{L=}.png")
-        plt.close(fig)
-
-        fig = plt.figure(figsize=(10, 10))
-        plt.plot(temps[n2:-n2], avg_en[n2:-n2])
-        plt.xlabel('Temperature')
-        plt.ylabel('average Energy')
-        plt.title('Energy vs Temperature zoomed in')
-        plt.savefig(f"energy_zoom_{q=}_{L=}.png")
-        plt.close(fig)
-
-        fig = plt.figure(figsize=(10, 10))
-        plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
-        plt.xlabel('Temperature')
-        plt.ylabel('Max magnetization')
-        plt.title('Max magnetization vs Temperature zoomed in')
-        plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
-        plt.close(fig)
-
-        fig = plt.figure(figsize=(10, 10))
-        plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
-        plt.xlabel('Temperature')
-        plt.ylabel('Specific Heat')
-        plt.title('Specific Heat vs Temperature zoomed in')
-        plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
-        plt.close(fig)
+    # if "pypy" in platform.python_implementation().lower():
+    #     import matplotlib.pyplot as plt
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #
+    #     plt.plot(spec_heat_temps, spec_heat)
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('Specific Heat')
+    #     plt.title('Specific Heat vs Temperature')
+    #     plt.savefig(f"specific_heat_{q=}_{L=}.png")
+    #
+    #     plt.close(fig)
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.plot(temps, avg_en)
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('average Energy')
+    #     plt.title('Energy vs Temperature')
+    #     plt.savefig(f"energy_{q=}_{L=}.png")
+    #     plt.close(fig)
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.plot(temps, avg_mag)
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('Max magnetization')
+    #     plt.title('Max magnetization vs Temperature')
+    #     plt.savefig(f"max_mag_{q=}_{L=}.png")
+    #     plt.close(fig)
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.plot(temps[n2:-n2], avg_en[n2:-n2])
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('average Energy')
+    #     plt.title('Energy vs Temperature zoomed in')
+    #     plt.savefig(f"energy_zoom_{q=}_{L=}.png")
+    #     plt.close(fig)
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.plot(temps[n2:-n2], avg_mag[n2:-n2])
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('Max magnetization')
+    #     plt.title('Max magnetization vs Temperature zoomed in')
+    #     plt.savefig(f"max_mag_zoom_{q=}_{L=}.png")
+    #     plt.close(fig)
+    #
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.plot(spec_heat_temps[n2:-n2], spec_heat[n2:-n2])
+    #     plt.xlabel('Temperature')
+    #     plt.ylabel('Specific Heat')
+    #     plt.title('Specific Heat vs Temperature zoomed in')
+    #     plt.savefig(f"specific_heat_zoom_{q=}_{L=}.png")
+    #     plt.close(fig)
 
 
 import multiprocessing as mp
