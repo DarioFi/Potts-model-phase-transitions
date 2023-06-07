@@ -128,8 +128,9 @@ n2 = 5
 
 def arange(start, stop, step):
     result = []
+    eps = 0.001
     current = start
-    while current < stop:
+    while current < stop - eps:
         result.append(current)
         current += step
     return result
