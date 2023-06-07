@@ -150,8 +150,8 @@ def get_temps(q, J=1, n1=n1, n2=n2, dt=dt, zero=0.4, infinity=3.0):
     out2 = arange(high, infinity, (infinity - high) / (n2 + 1))
 
     core = list(core)
-    out1 = list(out1)
-    out2 = list(out2)[1:]
+    out1 = list(out1)[:-1]
+    out2 = list(out2)
 
     for arr in [core, out1, out2]:
         for i, x in enumerate(arr):
