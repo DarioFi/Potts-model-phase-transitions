@@ -169,16 +169,17 @@ def simulate(L, q):
 
     ordered_temps = []
 
-    steps = (1 * 10 ** 7, 5 * 10 ** 7, 10 ** 7)
-    burnin = (1 * 10 ** 7, 5 * 10 ** 7, 10 ** 7)
+    steps = (10 ** 8, 2 * 10 ** 8, 5 * 10 ** 7)
+    burnin = (10 ** 8, 2 * 10 ** 8, 5 * 10 ** 7)
 
     for temps, step, burn in zip(temps_triple, steps, burnin):
         for t in temps:
             tempo = time.time()
             ordered_temps.append(t)
             if abs(t - critical_Temperature(q)) < 0.05:
-                print(f"Starting simulation for {q=} {L=} {t=} with step={10 ** 8} and burnin={10 ** 8}")
-                en, mag = MCMC(L, q, t, 10 ** 8, 10 ** 8)
+                exstp = 5 * 10 ** 8
+                print(f"Starting simulation for {q=} {L=} {t=} with step={exstp} and burnin={exstp}")
+                en, mag = MCMC(L, q, t, exstp, exstp)
             else:
                 print(f"Starting simulation for {q=} {L=} {t=} with step={step} and burnin={burn}")
                 en, mag = MCMC(L, q, t, step, burn)
@@ -272,7 +273,7 @@ import multiprocessing as mp
 # print(get_temps(2))
 
 qs_Ls = [
-    (3, 20),
+    (3, 50),
 ]
 
 if __name__ == '__main__':
